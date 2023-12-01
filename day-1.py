@@ -4,6 +4,10 @@ from typing import List
 from aocd.models import Puzzle
 from aocd.examples import Example
 
+## Packages to solve the puzzle
+import re
+from word2number import w2n
+
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
@@ -12,31 +16,80 @@ def parse(puzzle_input):
 
 
 def part_a(data):
-    """Solve Part A"""
+    result = 0
+
+    for line in data:
+        numbers = re.findall("\d", line)
+
+        if len(numbers) == 1:
+            line_result = (int(numbers[0]) * 10) + int(numbers[0])
+        else:
+            line_result = (int(numbers[0]) * 10) + int(numbers[len(numbers) - 1])
+
+        result = result + line_result
+
+    return result
 
 
 def part_b(data):
-    """Solve Part B"""
+    result = 0
+
+    for line in data:
+        letters = list(line)
+        numbers = []
+        word = ''
+
+        for letter in letters:
+            if re.match('\d', letter):
+                numbers.append(int(letter))
+            else:
+                word = word + letter
+                match = re.match('.*(one|two|three|four|five|six|seven|eight|nine)', word)
+                if match is not None:
+                    try:
+                        number_word = match.group(1)
+                        number = w2n.word_to_num(number_word)
+                        numbers.append(int(number))
+                        word = list(word)[len(word) - 1]
+                    except ValueError:
+                        continue
+
+        if len(numbers) == 1:
+            line_result = (int(numbers[0]) * 10) + int(numbers[0])
+        else:
+            line_result = (int(numbers[0]) * 10) + int(numbers[len(numbers) - 1])
+
+        result = result + line_result
+
+    return result
 
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
-    for example in examples:
+    for index, example in enumerate(examples):
+        print(f"Testing example {index + 1}")
         data = parse(example.input_data)
 
         if solve_part_a:
-            result = part_a(data)
-
-            if result == int(example.answer_a):
-                print("Part A: OK")
+            if example.answer_a is None:
+                print(f"Part A: No example solution provided.")
             else:
-                print(f"Part A: ERROR, expected {example.answer_a}, got {result}")
+                result = part_a(data)
+
+                if result == int(example.answer_a):
+                    print("Part A: OK")
+                else:
+                    print(f"Part A: ERROR, expected {example.answer_a}, got {result}")
+
         if solve_part_b:
-            result = part_b(data)
-
-            if result == int(example.answer_b):
-                print("Part B: OK")
+            if example.answer_b is None:
+                print(f"Part B: No example solution provided.")
             else:
-                print(f"Part B: ERROR, expected {example.answer_b}, got {result}")
+                result = part_b(data)
+
+                if result == int(example.answer_b):
+                    print("Part B: OK")
+                else:
+                    print(f"Part B: ERROR, expected {example.answer_b}, got {result}")
 
 
 def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=True):
@@ -67,8 +120,10 @@ if __name__ == "__main__":
         print(f"AOC Day {puzzle.day} will unlock at {puzzle.unlock_time()}!")
         exit(0)
 
-    print(puzzle.title)
+    print(f"Day {puzzle.day}: {puzzle.title}")
+    print()
     print("Testing examples")
-    test(puzzle.examples, True, False)
-    print("Solving")
-    solve(puzzle, True, False, False)
+    test(puzzle.examples, True, True)
+    print()
+    print("Solving Input")
+    solve(puzzle, True, True, True)
