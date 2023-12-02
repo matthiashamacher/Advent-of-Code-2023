@@ -5,20 +5,86 @@ from aocd.models import Puzzle
 from aocd.examples import Example
 
 ## Packages to solve the puzzle
+import re
 
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
+    games = {}
 
-    return input_array
+    for input_line in input_array:
+        parts = re.match(r'Game (\d+): (.*)', input_line)
+        game_id = int(parts.group(1))
+        game_subsets = parts.group(2).split('; ')
+        game_subset_arrays = []
+
+        for subset in game_subsets:
+            cubes = subset.split(', ')
+            cubes_array = {}
+
+            for cube in cubes:
+                cube_notation = re.match(r'(\d+) ([a-z]+)', cube)
+                cube_count = int(cube_notation.group(1))
+                cube_color = cube_notation.group(2)
+                cubes_array[cube_color] = cube_count
+
+            game_subset_arrays.append(cubes_array)
+
+        games[game_id] = game_subset_arrays
+
+    return games
 
 
 def part_a(data):
-    """Part A"""
+    possible = 0
+
+    for game_id, game_subsets in data.items():
+        impossible = False
+
+        for game_subset in game_subsets:
+            # Fail if one of them is higher than the limit
+            if 'red' in game_subset.keys():
+                if game_subset['red'] > 12:
+                    impossible = True
+                    break
+            if 'green' in game_subset.keys():
+                if game_subset['green'] > 13:
+                    impossible = True
+                    break
+            if 'blue' in game_subset.keys():
+                if game_subset['blue'] > 14:
+                    impossible = True
+                    break
+
+        if impossible is False:
+            possible = possible + game_id
+
+    return possible
 
 
 def part_b(data):
-    """Part B"""
+    power_sum = 0
+
+    for game_id, game_subsets in data.items():
+        red = 0
+        blue = 0
+        green = 0
+
+        for game_subset in game_subsets:
+            if 'red' in game_subset.keys():
+                if game_subset['red'] > red:
+                    red = game_subset['red']
+            if 'green' in game_subset.keys():
+                if game_subset['green'] > green:
+                    green = game_subset['green']
+            if 'blue' in game_subset.keys():
+                if game_subset['blue'] > blue:
+                    blue = game_subset['blue']
+
+        power = red * green * blue
+        power_sum = power_sum + power
+
+    return power_sum
 
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
