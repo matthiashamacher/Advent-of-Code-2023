@@ -79,7 +79,7 @@ def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=
 
 
 if __name__ == "__main__":
-    puzzle = Puzzle(year=2023, day=1)
+    puzzle = Puzzle(year=2023, day=4)
 
     localzone = datetime.now().astimezone().tzinfo
     now = datetime.now().astimezone(tz=localzone)
