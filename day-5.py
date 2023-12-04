@@ -5,56 +5,20 @@ from aocd.models import Puzzle
 from aocd.examples import Example
 
 ## Packages to solve the puzzle
-import re
-from collections import defaultdict
 
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
-    result = {}
 
-    line_regex = re.compile(r'Card\s+(\d+): ([\d+\s]+) \| ([\d+\s]+)')
-
-    for input_line in input_array:
-        for matches in re.finditer(line_regex, input_line):
-            card = matches.group(1)
-            winning_numbers = set([int(x) for x in matches.group(2).split()])
-            card_numbers = set([int(x) for x in matches.group(3).split()])
-            result[card] = {
-                'winning_numbers': winning_numbers,
-                'card_numbers': card_numbers
-            }
-
-    return result
+    return input_array
 
 
 def part_a(data):
-    result = 0
-
-    for card in data:
-        winning_numbers = data[card]['winning_numbers']
-        card_numbers = data[card]['card_numbers']
-        correct_numbers = len(winning_numbers & card_numbers)
-
-        if correct_numbers > 0:
-            result += 2**(correct_numbers - 1)
-
-    return result
+    """Part A"""
 
 
 def part_b(data):
-    card_dict = defaultdict(int)
-
-    for card in data:
-        card_dict[int(card)] += 1
-        winning_numbers = data[card]['winning_numbers']
-        card_numbers = data[card]['card_numbers']
-        correct_numbers = len(winning_numbers & card_numbers)
-
-        for jump in range(correct_numbers):
-            card_dict[int(card) + 1 + jump] += card_dict[int(card)]
-
-    return sum(card_dict.values())
+    """Part B"""
 
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
@@ -115,7 +79,7 @@ def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=
 
 
 if __name__ == "__main__":
-    puzzle = Puzzle(year=2023, day=4)
+    puzzle = Puzzle(year=2023, day=5)
 
     localzone = datetime.now().astimezone().tzinfo
     now = datetime.now().astimezone(tz=localzone)
