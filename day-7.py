@@ -5,53 +5,20 @@ from aocd.models import Puzzle
 from aocd.examples import Example
 
 ## Packages to solve the puzzle
-import re
 
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
 
-    return {
-        'times': [int(x.group(0)) for x in re.finditer(r'\d+', input_array[0])],
-        'distances': [int(x.group(0)) for x in re.finditer(r'\d+', input_array[1])]
-    }
+    return input_array
 
 
 def part_a(data):
-    times = data['times']
-    distances = data['distances']
-    number_of_winnable_ways = 0
-
-    for index, time in enumerate(times):
-        wins = 0
-        distance = distances[index]
-
-        for i in range(0, time):
-            if (i * (time - i)) > distance:
-                wins += 1
-
-        if number_of_winnable_ways == 0:
-            number_of_winnable_ways = wins
-        else:
-            number_of_winnable_ways *= wins
-
-    return number_of_winnable_ways
+    """Part A"""
 
 
 def part_b(data):
-    times = data['times']
-    distances = data['distances']
-
-    full_time = int(''.join(map(str, times)))
-    full_distance = int(''.join(map(str, distances)))
-
-    wins = 0
-
-    for i in range(0, full_time):
-        if (i * (full_time - i)) > full_distance:
-            wins += 1
-
-    return wins
+    """Part B"""
 
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
@@ -112,7 +79,7 @@ def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=
 
 
 if __name__ == "__main__":
-    puzzle = Puzzle(year=2023, day=6)
+    puzzle = Puzzle(year=2023, day=1)
 
     localzone = datetime.now().astimezone().tzinfo
     now = datetime.now().astimezone(tz=localzone)
