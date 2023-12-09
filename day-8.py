@@ -5,89 +5,37 @@ from aocd.models import Puzzle
 from aocd.examples import Example
 
 ## Packages to solve the puzzle
-import copy
+from itertools import cycle
+from math import lcm
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
 
-    return [line.strip().split() for line in input_array]
+    return input_array[0], {z[:3]: {'L': z[7:10], 'R': z[12:15]} for z in input_array[2:]}, input_array[0]
 
 
 def part_a(data):
-    games = copy.deepcopy(data)
+    lr, maps, _ = data
 
-    for i, game_data in enumerate(games):
-        strength = 0
-        label_counts = [game_data[0].count(s) for s in game_data[0]]
-        label_rank = ['AKQJT98765432'.index(s) for s in game_data[0]]
-        # 1 Five of a kind
-        if 5 in label_counts:
-            strength = 1
-        # 2 Four of a kind
-        elif 4 in label_counts:
-            strength = 2
-        # 3 Full house
-        elif 3 in label_counts and 2 in label_counts:
-            strength = 3
-        # 4 Three of a kind
-        elif 3 in label_counts:
-            strength = 4
-        # 5 Two pair
-        elif label_counts.count(2) == 4:
-            strength = 5
-            # 6 One pair
-        elif 2 in label_counts:
-            strength = 6
-        # 7 High card
-        elif label_counts.count(1) == 5:
-            strength = 7
-
-        games[i].append(strength)
-        games[i].append(label_rank)
-
-    cards = sorted(games, key=lambda x: (x[2], x[3]), reverse=True)
-
-    return sum([r * int(hand[1]) for r, hand in enumerate(cards, 1)])
+    return trace('AAA', cycle(lr), maps)
 
 
 def part_b(data):
-    games = copy.deepcopy(data)
+    lr, maps, _ = data
 
-    for i, game_data in enumerate(games):
-        strength = 0
-        label_counts = [game_data[0].count(s) for s in game_data[0]]
-        label_rank = ['AKQT98765432J'.index(s) for s in game_data[0]]
-        joker = game_data[0].count('J')
+    currents = [x for x in maps.keys() if x[-1] == 'A']
+    plens = [trace(current, cycle(lr), maps) for current in currents]
 
-        # 1 Five of a kind
-        if 5 - joker in label_counts or joker == 5:
-            strength = 1
-        # 2 Four of a kind
-        elif (4 - joker in label_counts and joker != 2) or joker == 3 or (joker == 2 and label_counts.count(2) == 4):
-            strength = 2
-        # 3 Full house
-        elif (3 in label_counts and 2 in label_counts) or (joker in range(1, 3) and label_counts.count(2) == 4):
-            strength = 3
-        # 4 Three of a kin
-        elif 3 - joker in label_counts or joker == 2:
-            strength = 4
-        # 5 Two pair
-        elif label_counts.count(2) == 4 or (joker == 1 and 2 in label_counts):
-            strength = 5
-        # 6 One pair,
-        elif 2 in label_counts or joker == 1:
-            strength = 6
-        # 7 High card
-        elif label_counts.count(1) == 5 and joker == 0:
-            strength = 7
+    return lcm(*plens)
 
-        games[i].append(strength)
-        games[i].append(label_rank)
 
-    cards = sorted(games, key=lambda x: (x[2], x[3]), reverse=True)
+def trace(current, lr, maps):
+    plen = 0
+    while current[-1] != 'Z':
+        current = maps[current][next(lr)]
+        plen += 1
 
-    return sum([r * int(hand[1]) for r, hand in enumerate(cards, 1)])
-
+    return plen
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
     part_a_success = False
@@ -147,7 +95,7 @@ def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=
 
 
 if __name__ == "__main__":
-    puzzle = Puzzle(year=2023, day=7)
+    puzzle = Puzzle(year=2023, day=8)
 
     localzone = datetime.now().astimezone().tzinfo
     now = datetime.now().astimezone(tz=localzone)

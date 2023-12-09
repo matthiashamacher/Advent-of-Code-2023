@@ -5,88 +5,20 @@ from aocd.models import Puzzle
 from aocd.examples import Example
 
 ## Packages to solve the puzzle
-import copy
+
 
 def parse(puzzle_input):
     input_array = puzzle_input.split('\n')
 
-    return [line.strip().split() for line in input_array]
+    return input_array
 
 
 def part_a(data):
-    games = copy.deepcopy(data)
-
-    for i, game_data in enumerate(games):
-        strength = 0
-        label_counts = [game_data[0].count(s) for s in game_data[0]]
-        label_rank = ['AKQJT98765432'.index(s) for s in game_data[0]]
-        # 1 Five of a kind
-        if 5 in label_counts:
-            strength = 1
-        # 2 Four of a kind
-        elif 4 in label_counts:
-            strength = 2
-        # 3 Full house
-        elif 3 in label_counts and 2 in label_counts:
-            strength = 3
-        # 4 Three of a kind
-        elif 3 in label_counts:
-            strength = 4
-        # 5 Two pair
-        elif label_counts.count(2) == 4:
-            strength = 5
-            # 6 One pair
-        elif 2 in label_counts:
-            strength = 6
-        # 7 High card
-        elif label_counts.count(1) == 5:
-            strength = 7
-
-        games[i].append(strength)
-        games[i].append(label_rank)
-
-    cards = sorted(games, key=lambda x: (x[2], x[3]), reverse=True)
-
-    return sum([r * int(hand[1]) for r, hand in enumerate(cards, 1)])
+    """Part A"""
 
 
 def part_b(data):
-    games = copy.deepcopy(data)
-
-    for i, game_data in enumerate(games):
-        strength = 0
-        label_counts = [game_data[0].count(s) for s in game_data[0]]
-        label_rank = ['AKQT98765432J'.index(s) for s in game_data[0]]
-        joker = game_data[0].count('J')
-
-        # 1 Five of a kind
-        if 5 - joker in label_counts or joker == 5:
-            strength = 1
-        # 2 Four of a kind
-        elif (4 - joker in label_counts and joker != 2) or joker == 3 or (joker == 2 and label_counts.count(2) == 4):
-            strength = 2
-        # 3 Full house
-        elif (3 in label_counts and 2 in label_counts) or (joker in range(1, 3) and label_counts.count(2) == 4):
-            strength = 3
-        # 4 Three of a kin
-        elif 3 - joker in label_counts or joker == 2:
-            strength = 4
-        # 5 Two pair
-        elif label_counts.count(2) == 4 or (joker == 1 and 2 in label_counts):
-            strength = 5
-        # 6 One pair,
-        elif 2 in label_counts or joker == 1:
-            strength = 6
-        # 7 High card
-        elif label_counts.count(1) == 5 and joker == 0:
-            strength = 7
-
-        games[i].append(strength)
-        games[i].append(label_rank)
-
-    cards = sorted(games, key=lambda x: (x[2], x[3]), reverse=True)
-
-    return sum([r * int(hand[1]) for r, hand in enumerate(cards, 1)])
+    """Part B"""
 
 
 def test(examples: List[Example], solve_part_a=True, solve_part_b=True):
@@ -147,7 +79,7 @@ def solve(puzzle: Puzzle, solve_part_a=True, solve_part_b=True, submit_solution=
 
 
 if __name__ == "__main__":
-    puzzle = Puzzle(year=2023, day=7)
+    puzzle = Puzzle(year=2023, day=10)
 
     localzone = datetime.now().astimezone().tzinfo
     now = datetime.now().astimezone(tz=localzone)
